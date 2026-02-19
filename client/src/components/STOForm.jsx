@@ -173,7 +173,7 @@ function STOForm({ onCreated, onCancel }) {
                                                 <select
                                                     value={['K9', 'K7'].includes(item.material_class.toUpperCase()) ? item.material_class.toUpperCase() : ''}
                                                     onChange={e => updateItem(index, 'material_class', e.target.value)}
-                                                    style={{ width: '60px', background: 'var(--bg-glass)', color: 'white', border: '1px solid var(--border-glass)', borderRadius: '4px' }}
+                                                    style={{ width: '80px', background: 'gray', color: 'white', border: '1px solid var(--border-glass)', borderRadius: '4px' }}
                                                 >
                                                     <option value="">Custom</option>
                                                     <option value="K9">K9</option>
@@ -184,7 +184,7 @@ function STOForm({ onCreated, onCancel }) {
                                                         value={item.material_class}
                                                         onChange={e => updateItem(index, 'material_class', e.target.value)}
                                                         placeholder="Class"
-                                                        style={{ width: '60px' }}
+                                                        style={{ width: '80px' }}
                                                     />
                                                 )}
                                             </div>
@@ -193,7 +193,7 @@ function STOForm({ onCreated, onCancel }) {
                                             <select
                                                 value={item.length}
                                                 onChange={e => updateItem(index, 'length', parseFloat(e.target.value))}
-                                                style={{ width: '80px', background: 'var(--bg-glass)', color: 'white', border: '1px solid var(--border-glass)', borderRadius: '4px' }}
+                                                style={{ width: '80px', background: 'gray', color: 'white', border: '1px solid var(--border-glass)', borderRadius: '4px' }}
                                             >
                                                 {lengthOptions.map(opt => (
                                                     <option key={opt} value={opt}>{opt}</option>
