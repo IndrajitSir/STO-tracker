@@ -1,20 +1,27 @@
 const API_BASE = '/api/stos';
 
+const handleResponse = async (response) => {
+    const data = await response.json();
+    if (!response.ok || data.error) {
+        throw new Error(data.error || `HTTP error! status: ${response.status}`);
+    }
+    return data;
+};
+
 export const stoApi = {
     getStats: async () => {
-        // Optional: get some summary stats if available
         const response = await fetch(`${API_BASE}`);
-        return response.json();
+        return handleResponse(response);
     },
 
     getAll: async () => {
         const response = await fetch(`${API_BASE}`);
-        return response.json();
+        return handleResponse(response);
     },
 
     getById: async (id) => {
         const response = await fetch(`${API_BASE}/${id}`);
-        return response.json();
+        return handleResponse(response);
     },
 
     create: async (data) => {
@@ -23,19 +30,19 @@ export const stoApi = {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
         });
-        return response.json();
+        return handleResponse(response);
     },
 
     search: async (params) => {
         const query = new URLSearchParams(params).toString();
         const response = await fetch(`${API_BASE}/material-search?${query}`);
-        return response.json();
+        return handleResponse(response);
     },
 
     delete: async (id) => {
         const response = await fetch(`${API_BASE}/${id}`, {
             method: 'DELETE',
         });
-        return response.json();
+        return handleResponse(response);
     }
 };

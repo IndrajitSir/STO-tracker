@@ -10,10 +10,12 @@ function STOList({ stos, isLoading, onViewDetail, onDelete }) {
         );
     }
 
-    if (stos.length === 0) {
+    if (!Array.isArray(stos) || stos.length === 0) {
         return (
             <div className="glass card" style={{ textAlign: 'center', padding: '4rem' }}>
-                <p style={{ color: 'var(--text-muted)' }}>No STOs found. Create one to get started.</p>
+                <p style={{ color: 'var(--text-muted)' }}>
+                    {!Array.isArray(stos) ? 'Invalid data received from server.' : 'No STOs found. Create one to get started.'}
+                </p>
             </div>
         );
     }

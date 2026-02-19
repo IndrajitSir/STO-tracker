@@ -11,6 +11,7 @@ function App() {
     const [selectedStoId, setSelectedStoId] = useState(null);
     const [stos, setStos] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         if (view === 'list') {
@@ -20,11 +21,14 @@ function App() {
 
     const loadStos = async () => {
         setIsLoading(true);
+        setError(null);
         try {
             const data = await stoApi.getAll();
-            setStos(data);
+            setStos(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error('Failed to load STOs', err);
+            setError(err.message);
+            setStos([]);
         } finally {
             setIsLoading(false);
         }
@@ -76,6 +80,11 @@ function App() {
                     </button>
                 </nav>
             </header>
+            {error && (
+                <div className="glass card" style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--danger)', color: 'var(--danger)', padding: '1rem', marginBottom: '1.5rem', borderRadius: '12px' }}>
+                    <strong>Error:</strong> {error}
+                </div>
+            )}
 
             <main>
                 {view === 'list' && (
