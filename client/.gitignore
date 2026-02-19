@@ -1,0 +1,9 @@
+package-lock.json
+./package-lock.json
+./env
+# Dependency directories
+node_modules/
+
+# Build output
+dist/
+build/
