@@ -5,7 +5,7 @@ import { Plus, Trash2, Save, X } from 'lucide-react';
 function STOForm({ onCreated, onCancel }) {
     const [header, setHeader] = useState({
         sto_number: '',
-        from_location: '',
+        from_location: 'U3',
         to_location: 'U3',
         remarks: '',
         created_by: localStorage.getItem('sto_user_name') || ''
@@ -100,12 +100,17 @@ function STOForm({ onCreated, onCancel }) {
                         </div>
                         <div className="form-group">
                             <label>From Location</label>
-                            <input
+                            <select
                                 required
                                 value={header.from_location}
                                 onChange={e => setHeader({ ...header, from_location: e.target.value })}
-                                style={{ width: '100%' }}
-                            />
+                                style={{ width: '100%', background: 'var(--bg-glass)', color: 'white', border: '1px solid var(--border-glass)', borderRadius: '8px', padding: '0.4rem' }}
+                            >
+                                <option value="U3">U3</option>
+                                <option value="KHATPUKUR">KHATPUKUR</option>
+                                <option value="MACKEIL">MACKEIL</option>
+                                <option value="MANGALPUR">MANGALPUR</option>
+                            </select>
                         </div>
                         <div className="form-group">
                             <label>To Location</label>
