@@ -4,8 +4,9 @@ const router = express.Router();
 const db = require('../db');
 
 router.post('/', async (req, res) => {
-  const conn = await db.getConnection();
+  let conn;
   try {
+    conn = await db.getConnection();
     const { header, items } = req.body;
     await conn.beginTransaction();
 
@@ -38,54 +39,70 @@ router.post('/', async (req, res) => {
     res.json({ id: stoId });
 
   } catch (e) {
-    await conn.rollback();
+    if (conn) await conn.rollback();
+    console.error('Create error:', e);
     res.status(500).json({ error: e.message });
   } finally {
-    conn.release();
+    if (conn) conn.release();
   }
 });
 
 router.get('/', async (req, res) => {
-  const [rows] = await db.execute(`SELECT * FROM sto_header ORDER BY id DESC`);
-  res.json(rows);
+  try {
+    const [rows] = await db.execute(`SELECT * FROM sto_header ORDER BY id DESC`);
+    res.json(rows);
+  } catch (e) {
+    console.error('Fetch error:', e);
+    res.status(500).json({ error: e.message });
+  }
 });
 
 router.get('/material-search', async (req, res) => {
-  const { diameter, materialClass, length, batch } = req.query;
+  try {
+    const { diameter, materialClass, length, batch } = req.query;
 
-  let sql = `
-  SELECT sh.po_number, sh.from_location, sh.to_location,
-         si.diameter, si.material_class, si.length, si.batch, si.quantity_mtr
-  FROM sto_items si
-  JOIN sto_header sh ON sh.id = si.sto_id
-  WHERE 1=1
-  `;
+    let sql = `
+    SELECT sh.po_number, sh.from_location, sh.to_location,
+           si.diameter, si.material_class, si.length, si.batch, si.quantity_mtr
+    FROM sto_items si
+    JOIN sto_header sh ON sh.id = si.id
+    WHERE 1=1
+    `;
 
-  const params = [];
+    const params = [];
 
-  const addFilter = (field, value) => {
-    if (value) {
-      const values = value.split(',').map(v => v.trim()).filter(v => v !== '');
-      if (values.length > 0) {
-        sql += ` AND ${field} IN (${values.map(() => '?').join(',')})`;
-        params.push(...values);
+    const addFilter = (field, value) => {
+      if (value) {
+        const values = value.split(',').map(v => v.trim()).filter(v => v !== '');
+        if (values.length > 0) {
+          sql += ` AND ${field} IN (${values.map(() => '?').join(',')})`;
+          params.push(...values);
+        }
       }
-    }
-  };
+    };
 
-  addFilter('si.diameter', diameter);
-  addFilter('si.material_class', materialClass);
-  addFilter('si.length', length);
-  addFilter('si.batch', batch);
+    addFilter('si.diameter', diameter);
+    addFilter('si.material_class', materialClass);
+    addFilter('si.length', length);
+    addFilter('si.batch', batch);
 
-  const [rows] = await db.execute(sql, params);
-  res.json(rows);
+    const [rows] = await db.execute(sql, params);
+    res.json(rows);
+  } catch (e) {
+    console.error('Search error:', e);
+    res.status(500).json({ error: e.message });
+  }
 });
 
 router.get('/:id', async (req, res) => {
-  const [h] = await db.execute(`SELECT * FROM sto_header WHERE id=?`, [req.params.id]);
-  const [i] = await db.execute(`SELECT * FROM sto_items WHERE sto_id=?`, [req.params.id]);
-  res.json({ header: h[0], items: i });
+  try {
+    const [h] = await db.execute(`SELECT * FROM sto_header WHERE id=?`, [req.params.id]);
+    const [i] = await db.execute(`SELECT * FROM sto_items WHERE sto_id=?`, [req.params.id]);
+    res.json({ header: h[0], items: i });
+  } catch (e) {
+    console.error('Detail fetch error:', e);
+    res.status(500).json({ error: e.message });
+  }
 });
 
 router.delete('/:id', async (req, res) => {
@@ -98,6 +115,7 @@ router.delete('/:id', async (req, res) => {
     res.json({ success: true });
   } catch (e) {
     await conn.rollback();
+    console.error('Delete error:', e);
     res.status(500).json({ error: e.message });
   } finally {
     conn.release();
