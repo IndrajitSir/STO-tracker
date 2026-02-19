@@ -1,6 +1,7 @@
 package-lock.json
 ./package-lock.json
-./env
+./.env
+.env
 # Dependency directories
 node_modules/
 
