@@ -10,7 +10,9 @@ CREATE TABLE sto_header (
   to_location VARCHAR(30),
   remarks TEXT,
   created_by VARCHAR(50),
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  modified_by VARCHAR(50),
+  modified_at DATETIME ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE sto_items (

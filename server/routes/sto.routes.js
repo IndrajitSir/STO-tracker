@@ -63,10 +63,20 @@ router.get('/material-search', async (req, res) => {
 
   const params = [];
 
-  if (diameter) { sql += ' AND si.diameter=?'; params.push(diameter); }
-  if (materialClass) { sql += ' AND si.material_class=?'; params.push(materialClass); }
-  if (length) { sql += ' AND si.length=?'; params.push(length); }
-  if (batch) { sql += ' AND si.batch=?'; params.push(batch); }
+  const addFilter = (field, value) => {
+    if (value) {
+      const values = value.split(',').map(v => v.trim()).filter(v => v !== '');
+      if (values.length > 0) {
+        sql += ` AND ${field} IN (${values.map(() => '?').join(',')})`;
+        params.push(...values);
+      }
+    }
+  };
+
+  addFilter('si.diameter', diameter);
+  addFilter('si.material_class', materialClass);
+  addFilter('si.length', length);
+  addFilter('si.batch', batch);
 
   const [rows] = await db.execute(sql, params);
   res.json(rows);

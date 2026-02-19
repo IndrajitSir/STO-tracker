@@ -38,11 +38,10 @@ function STOSearch({ onViewDetail }) {
                     <div className="form-group">
                         <label>Diameter</label>
                         <input
-                            type="number"
                             value={filters.diameter}
                             onChange={e => setFilters({ ...filters, diameter: e.target.value })}
                             style={{ width: '100%' }}
-                            placeholder="e.g. 600"
+                            placeholder="e.g. 600, 700"
                         />
                     </div>
                     <div className="form-group">
@@ -51,17 +50,16 @@ function STOSearch({ onViewDetail }) {
                             value={filters.materialClass}
                             onChange={e => setFilters({ ...filters, materialClass: e.target.value })}
                             style={{ width: '100%' }}
-                            placeholder="e.g. K9"
+                            placeholder="e.g. K9, K7"
                         />
                     </div>
                     <div className="form-group">
                         <label>Length</label>
                         <input
-                            type="number" step="0.1"
                             value={filters.length}
                             onChange={e => setFilters({ ...filters, length: e.target.value })}
                             style={{ width: '100%' }}
-                            placeholder="e.g. 6.0"
+                            placeholder="e.g. 6.0, 5.5"
                         />
                     </div>
                     <div className="form-group">
@@ -70,7 +68,7 @@ function STOSearch({ onViewDetail }) {
                             value={filters.batch}
                             onChange={e => setFilters({ ...filters, batch: e.target.value })}
                             style={{ width: '100%' }}
-                            placeholder="e.g. B123"
+                            placeholder="e.g. 202512, 202511"
                         />
                     </div>
                     <button type="submit" className="btn-primary" style={{ height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
