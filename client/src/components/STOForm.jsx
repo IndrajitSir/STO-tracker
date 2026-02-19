@@ -1,41 +1,70 @@
 import React, { useState } from 'react';
 import { stoApi } from '../api/stoApi';
-import { Plus, Trash2, Save, X } from 'lucide-react';
+import { Plus, Trash2, Save, X, ClipboardType } from 'lucide-react';
 
 function STOForm({ onCreated, onCancel }) {
     const [header, setHeader] = useState({
         sto_number: '',
         from_location: 'U3',
-        to_location: 'U3',
+        to_location: '',
         remarks: '',
-        created_by: localStorage.getItem('sto_user_name') || ''
+        created_by: 'Anonymous'
     });
-
-    const [userName, setUserName] = useState(localStorage.getItem('sto_user_name') || '');
-
-    const handleUserChange = (name) => {
-        setUserName(name);
-        localStorage.setItem('sto_user_name', name);
-    };
 
     const [items, setItems] = useState(() => {
         const now = new Date();
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const defaultBatch = `${year}${month}`;
-        return [{ diameter: 600, material_class: 'K9', length: 100, batch: defaultBatch, quantity_mtr: 0 }];
+        return [{ diameter: 350, material_class: 'K7', length: '6.0M', batch: defaultBatch, quantity_mtr: 0 }];
     });
 
+    const [bulkData, setBulkData] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const lengthOptions = [
-        ...Array.from({ length: 9 }, (_, i) => 100 + i * 50), // 100, 150... 500
-        ...Array.from({ length: 7 }, (_, i) => 600 + i * 100)  // 600, 700... 1200
+    const lengthOptions = ['6.0M', '5.5M', '5.0M', '4.5M', '4.0M'];
+    const diameterOptions = [
+        100, 150, 200, 250, 300, 350, 400, 450, 500,
+        600, 700, 800, 900, 1000, 1100, 1200
     ];
+
+    const handleBulkParse = () => {
+        if (!bulkData.trim()) return;
+
+        // Extract STO Number
+        const stoMatch = bulkData.match(/STO\s*:\s*(\d+)/i);
+        if (stoMatch) {
+            setHeader(prev => ({ ...prev, sto_number: stoMatch[1] }));
+        }
+
+        // Extract Items
+        // Example: 350 K7 L6.0 → 1992 MTR- 6.0M202602
+        const itemRegex = /(\d+)\s+(K\d+).*?→\s*([\d.]+)\s*MTR-\s*([\d.]+M)(\d+)/gi;
+        const newItems = [];
+        let match;
+
+        while ((match = itemRegex.exec(bulkData)) !== null) {
+            newItems.push({
+                diameter: parseInt(match[1]),
+                material_class: match[2],
+                quantity_mtr: parseFloat(match[3]),
+                length: match[4],
+                batch: match[5]
+            });
+        }
+
+        if (newItems.length > 0) {
+            setItems(newItems);
+            setBulkData('');
+            alert(`Successfully parsed ${newItems.length} items.`);
+        } else {
+            alert('Could not find any items in the provided data. Please check the format.');
+        }
+    };
 
     const addItem = () => {
         const lastBatch = items[items.length - 1]?.batch || '';
-        setItems([...items, { diameter: 600, material_class: 'K9', length: 100, batch: lastBatch, quantity_mtr: 0 }]);
+        setItems([...items, { diameter: 350, material_class: 'K7', length: '6.0M', batch: lastBatch, quantity_mtr: 0 }]);
     };
 
     const removeItem = (index) => {
@@ -50,17 +79,23 @@ function STOForm({ onCreated, onCancel }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!userName) {
-            alert('Please enter your name first');
+
+        if (!header.sto_number) {
+            alert('STO Number is required');
             return;
         }
+
+        if (header.from_location === header.to_location) {
+            alert('From Location and To Location cannot be the same.');
+            return;
+        }
+
         setIsSubmitting(true);
         try {
             const submissionData = {
                 header: {
                     ...header,
-                    created_by: userName,
-                    po_number: '' // Removed from UI
+                    po_number: ''
                 },
                 items
             };
@@ -76,26 +111,39 @@ function STOForm({ onCreated, onCancel }) {
     return (
         <div className="fade-in">
             <h2 style={{ marginBottom: '1.5rem' }}>Create New STO</h2>
+
+            <div className="glass card" style={{ marginBottom: '1.5rem', border: '1px dashed var(--primary)' }}>
+                <h3 style={{ marginBottom: '1rem', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <ClipboardType size={18} /> Bulk Data Add
+                </h3>
+                <textarea
+                    placeholder="Paste example data here...&#10;Example:&#10;STO : 6200000914&#10;350 K7 L6.0 → 1992 MTR- 6.0M202602..."
+                    value={bulkData}
+                    onChange={e => setBulkData(e.target.value)}
+                    style={{ width: '100%', height: '100px', background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid var(--border-glass)', borderRadius: '8px', padding: '0.5rem', marginBottom: '0.5rem', fontSize: '0.85rem' }}
+                />
+                <button
+                    type="button"
+                    onClick={handleBulkParse}
+                    className="btn-nav"
+                    style={{ background: 'var(--primary)', color: 'white', padding: '0.4rem 1rem', fontSize: '0.85rem' }}
+                >
+                    Parse & Add Items
+                </button>
+            </div>
+
             <form onSubmit={handleSubmit}>
                 <div className="glass card">
                     <h3 style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border-glass)', paddingBottom: '0.5rem' }}>Header Information</h3>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                         <div className="form-group">
-                            <label>User Name (Your Name)</label>
+                            <label>STO Number <span style={{ color: 'var(--danger)' }}>*</span></label>
                             <input
                                 required
-                                value={userName}
-                                onChange={e => handleUserChange(e.target.value)}
-                                placeholder="Enter your name"
-                                style={{ width: '100%', borderColor: !userName ? 'var(--danger)' : 'var(--border-glass)' }}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>STO Number</label>
-                            <input
                                 value={header.sto_number}
                                 onChange={e => setHeader({ ...header, sto_number: e.target.value })}
-                                style={{ width: '100%' }}
+                                style={{ width: '100%', borderColor: !header.sto_number ? 'var(--danger)' : 'var(--border-glass)' }}
+                                placeholder="Required"
                             />
                         </div>
                         <div className="form-group">
@@ -120,6 +168,7 @@ function STOForm({ onCreated, onCancel }) {
                                 onChange={e => setHeader({ ...header, to_location: e.target.value })}
                                 style={{ width: '100%', background: 'gray', color: 'white', border: '1px solid var(--border-glass)', borderRadius: '8px', padding: '0.4rem' }}
                             >
+                                <option value="">Select Destination</option>
                                 <option value="U3">U3</option>
                                 <option value="KHATPUKUR">KHATPUKUR</option>
                                 <option value="MACKEIL">MACKEIL</option>
@@ -161,38 +210,30 @@ function STOForm({ onCreated, onCancel }) {
                                 {items.map((item, index) => (
                                     <tr key={index} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                                         <td style={{ padding: '0.5rem' }}>
-                                            <input
-                                                type="number"
+                                            <select
                                                 value={item.diameter}
-                                                onChange={e => updateItem(index, 'diameter', e.target.value)}
-                                                style={{ width: '80px' }}
-                                            />
+                                                onChange={e => updateItem(index, 'diameter', parseInt(e.target.value))}
+                                                style={{ width: '90px', background: 'gray', color: 'white', border: '1px solid var(--border-glass)', borderRadius: '4px' }}
+                                            >
+                                                {diameterOptions.map(opt => (
+                                                    <option key={opt} value={opt}>{opt}</option>
+                                                ))}
+                                            </select>
                                         </td>
                                         <td style={{ padding: '0.5rem' }}>
-                                            <div style={{ display: 'flex', gap: '0.2rem' }}>
-                                                <select
-                                                    value={['K9', 'K7'].includes(item.material_class.toUpperCase()) ? item.material_class.toUpperCase() : ''}
-                                                    onChange={e => updateItem(index, 'material_class', e.target.value)}
-                                                    style={{ width: '80px', background: 'gray', color: 'white', border: '1px solid var(--border-glass)', borderRadius: '4px' }}
-                                                >
-                                                    <option value="">Custom</option>
-                                                    <option value="K9">K9</option>
-                                                    <option value="K7">K7</option>
-                                                </select>
-                                                {(!['K9', 'K7'].includes(item.material_class.toUpperCase())) && (
-                                                    <input
-                                                        value={item.material_class}
-                                                        onChange={e => updateItem(index, 'material_class', e.target.value)}
-                                                        placeholder="Class"
-                                                        style={{ width: '80px' }}
-                                                    />
-                                                )}
-                                            </div>
+                                            <select
+                                                value={item.material_class.toUpperCase()}
+                                                onChange={e => updateItem(index, 'material_class', e.target.value)}
+                                                style={{ width: '80px', background: 'gray', color: 'white', border: '1px solid var(--border-glass)', borderRadius: '4px' }}
+                                            >
+                                                <option value="K9">K9</option>
+                                                <option value="K7">K7</option>
+                                            </select>
                                         </td>
                                         <td style={{ padding: '0.5rem' }}>
                                             <select
                                                 value={item.length}
-                                                onChange={e => updateItem(index, 'length', parseFloat(e.target.value))}
+                                                onChange={e => updateItem(index, 'length', e.target.value)}
                                                 style={{ width: '80px', background: 'gray', color: 'white', border: '1px solid var(--border-glass)', borderRadius: '4px' }}
                                             >
                                                 {lengthOptions.map(opt => (
@@ -210,8 +251,9 @@ function STOForm({ onCreated, onCancel }) {
                                         <td style={{ padding: '0.5rem' }}>
                                             <input
                                                 type="number"
+                                                step="0.1"
                                                 value={item.quantity_mtr}
-                                                onChange={e => updateItem(index, 'quantity_mtr', e.target.value)}
+                                                onChange={e => updateItem(index, 'quantity_mtr', parseFloat(e.target.value))}
                                                 style={{ width: '90px' }}
                                             />
                                         </td>

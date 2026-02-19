@@ -44,5 +44,14 @@ export const stoApi = {
             method: 'DELETE',
         });
         return handleResponse(response);
+    },
+
+    updateItemQuantity: async (stoId, itemId, quantity) => {
+        const response = await fetch(`${API_BASE}/${stoId}/items/${itemId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quantity_mtr: quantity }),
+        });
+        return handleResponse(response);
     }
 };

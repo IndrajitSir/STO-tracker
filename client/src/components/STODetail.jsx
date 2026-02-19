@@ -102,8 +102,31 @@ function STODetail({ id, onClose, onDelete }) {
                                             <Tag size={14} className="text-muted" /> {item.batch || '—'}
                                         </div>
                                     </td>
-                                    <td style={{ padding: '1rem 0.75rem', textAlign: 'right', fontWeight: 700, color: 'var(--accent)' }}>
-                                        {item.quantity_mtr} Mtr
+                                    <td style={{ padding: '1rem 0.75rem', textAlign: 'right', fontWeight: 700 }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                                            <input
+                                                type="number"
+                                                step="0.1"
+                                                defaultValue={item.quantity_mtr}
+                                                id={`qty-${item.id}`}
+                                                style={{ width: '80px', textAlign: 'right', background: 'rgba(0,0,0,0.2)', color: 'var(--accent)', border: '1px solid var(--border-glass)', borderRadius: '4px', padding: '0.2rem' }}
+                                            />
+                                            <button
+                                                onClick={async () => {
+                                                    const newQty = parseFloat(document.getElementById(`qty-${item.id}`).value);
+                                                    if (isNaN(newQty)) return;
+                                                    try {
+                                                        await stoApi.updateItemQuantity(id, item.id, newQty);
+                                                        alert('Quantity updated successfully');
+                                                    } catch (err) {
+                                                        alert('Failed to update quantity: ' + err.message);
+                                                    }
+                                                }}
+                                                style={{ background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '4px', padding: '0.2rem 0.5rem', fontSize: '0.75rem', cursor: 'pointer' }}
+                                            >
+                                                Update
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
@@ -111,13 +134,7 @@ function STODetail({ id, onClose, onDelete }) {
                     </table>
                 </div>
 
-                <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'space-between' }}>
-                    <button
-                        onClick={() => onDelete(id)}
-                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--danger)', color: 'var(--danger)', padding: '0.6rem 1.2rem', borderRadius: '8px' }}
-                    >
-                        <Trash2 size={18} /> Delete STO
-                    </button>
+                <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
                     <button
                         onClick={onClose}
                         className="btn-primary"

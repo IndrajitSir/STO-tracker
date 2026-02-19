@@ -57,12 +57,6 @@ function STOList({ stos, isLoading, onViewDetail, onDelete }) {
                             >
                                 <Eye size={16} /> Details
                             </button>
-                            <button
-                                onClick={() => onDelete(sto.id)}
-                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--danger)', color: 'var(--danger)', padding: '0.5rem', borderRadius: '8px' }}
-                            >
-                                <Trash2 size={16} />
-                            </button>
                         </div>
                     </div>
                 ))}

@@ -94,6 +94,20 @@ router.get('/material-search', async (req, res) => {
   }
 });
 
+router.patch('/:id/items/:itemId', async (req, res) => {
+  try {
+    const { quantity_mtr } = req.body;
+    await db.execute(
+      `UPDATE sto_items SET quantity_mtr = ? WHERE id = ? AND sto_id = ?`,
+      [quantity_mtr, req.params.itemId, req.params.id]
+    );
+    res.json({ success: true });
+  } catch (e) {
+    console.error('Update item error:', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
 router.get('/:id', async (req, res) => {
   try {
     const [h] = await db.execute(`SELECT * FROM sto_header WHERE id=?`, [req.params.id]);
