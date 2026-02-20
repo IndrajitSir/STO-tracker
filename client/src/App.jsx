@@ -109,6 +109,7 @@ function App() {
                             isLoading={isLoading}
                             onViewDetail={handleViewDetail}
                             onDelete={handleDelete}
+                            onSyncRequest={openSapSync}
                         />
                     )}
                     {view === 'create' && (
@@ -128,8 +129,16 @@ function App() {
                         handleDelete(selectedStoId);
                         setSelectedStoId(null);
                     }}
+                    onSyncRequest={openSapSync}
                 />
             )}
+
+            <SAPSyncModal
+                isOpen={sapSyncData.isOpen}
+                stoNumber={sapSyncData.stoNumber}
+                onClose={() => setSapSyncData({ ...sapSyncData, isOpen: false })}
+                onSyncComplete={handleSyncComplete}
+            />
         </>
     );
 }
