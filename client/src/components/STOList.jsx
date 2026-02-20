@@ -2,6 +2,9 @@ import React from 'react';
 import { Eye, Trash2, Calendar, MapPin, Hash } from 'lucide-react';
 
 function STOList({ stos, isLoading, onViewDetail, onDelete }) {
+    const [fromFilter, setFromFilter] = React.useState('');
+    const [toFilter, setToFilter] = React.useState('');
+
     if (isLoading) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}>
@@ -20,10 +23,41 @@ function STOList({ stos, isLoading, onViewDetail, onDelete }) {
         );
     }
 
+    const filteredStos = stos.filter(sto => {
+        const fromMatch = (sto.from_location || '').toLowerCase().includes(fromFilter.toLowerCase());
+        const toMatch = (sto.to_location || '').toLowerCase().includes(toFilter.toLowerCase());
+        return fromMatch && toMatch;
+    });
+
     return (
         <div className="fade-in">
+            <div className="glass card" style={{ display: 'flex', gap: '1rem', padding: '1rem', marginBottom: '1.5rem', alignItems: 'center' }}>
+                <Search size={20} className="text-muted" />
+                <div style={{ flex: 1, display: 'flex', gap: '1rem' }}>
+                    <div style={{ flex: 1 }}>
+                        <input
+                            placeholder="Filter From Location..."
+                            value={fromFilter}
+                            onChange={e => setFromFilter(e.target.value)}
+                            style={{ width: '100%', padding: '0.5rem 0.8rem', fontSize: '0.9rem' }}
+                        />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                        <input
+                            placeholder="Filter To Location..."
+                            value={toFilter}
+                            onChange={e => setToFilter(e.target.value)}
+                            style={{ width: '100%', padding: '0.5rem 0.8rem', fontSize: '0.9rem' }}
+                        />
+                    </div>
+                </div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', minWidth: '80px', textAlign: 'right' }}>
+                    {filteredStos.length} of {stos.length}
+                </div>
+            </div>
+
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.5rem' }}>
-                {stos.map((sto) => (
+                {filteredStos.map((sto) => (
                     <div key={sto.id} className="glass card sto-card" style={{ position: 'relative' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)', fontWeight: 700 }}>

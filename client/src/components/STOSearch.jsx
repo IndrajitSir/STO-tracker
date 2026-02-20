@@ -8,7 +8,9 @@ function STOSearch({ onViewDetail }) {
         materialClass: '',
         length: '',
         year: '',
-        month: ''
+        month: '',
+        fromLocation: '',
+        toLocation: ''
     });
 
     const [results, setResults] = useState([]);
@@ -32,7 +34,9 @@ function STOSearch({ onViewDetail }) {
                 diameter: filters.diameter,
                 materialClass: filters.materialClass,
                 length: filters.length,
-                batch: batch
+                batch: batch,
+                fromLocation: filters.fromLocation,
+                toLocation: filters.toLocation
             };
             const data = await stoApi.search(apiFilters);
             setResults(data);
@@ -50,7 +54,7 @@ function STOSearch({ onViewDetail }) {
                 <h2 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <Search size={24} /> Material Search
                 </h2>
-                <form onSubmit={handleSearch} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem', alignItems: 'flex-end' }}>
+                <form onSubmit={handleSearch} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '1rem', alignItems: 'flex-end' }}>
                     <div className="form-group">
                         <label>Diameter</label>
                         <select
@@ -113,6 +117,24 @@ function STOSearch({ onViewDetail }) {
                         >
                             {monthOptions.map(opt => <option key={opt} value={opt}>{opt || 'All'}</option>)}
                         </select>
+                    </div>
+                    <div className="form-group">
+                        <label>From</label>
+                        <input
+                            value={filters.fromLocation}
+                            onChange={e => setFilters({ ...filters, fromLocation: e.target.value })}
+                            placeholder="Location"
+                            style={{ width: '100%' }}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>To</label>
+                        <input
+                            value={filters.toLocation}
+                            onChange={e => setFilters({ ...filters, toLocation: e.target.value })}
+                            placeholder="Location"
+                            style={{ width: '100%' }}
+                        />
                     </div>
                     <button type="submit" className="btn-primary" style={{ height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
                         <Search size={18} /> {isSearching ? '...' : 'Search'}

@@ -58,7 +58,7 @@ router.get('/', async (req, res) => {
 
 router.get('/material-search', async (req, res) => {
   try {
-    const { diameter, materialClass, length, batch } = req.query;
+    const { diameter, materialClass, length, batch, fromLocation, toLocation } = req.query;
 
     let sql = `
     SELECT sh.id as sto_id, sh.sto_number, sh.from_location, sh.to_location,
@@ -84,6 +84,8 @@ router.get('/material-search', async (req, res) => {
     addFilter('si.material_class', materialClass);
     addFilter('si.length', length);
     addFilter('si.batch', batch);
+    addFilter('sh.from_location', fromLocation);
+    addFilter('sh.to_location', toLocation);
 
     const [rows] = await db.execute(sql, params);
     res.json(rows);
