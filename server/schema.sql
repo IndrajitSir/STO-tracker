@@ -4,7 +4,6 @@ USE sto_tracker;
 
 CREATE TABLE sto_header (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  po_number VARCHAR(20),
   sto_number VARCHAR(20),
   from_location VARCHAR(30),
   to_location VARCHAR(30),

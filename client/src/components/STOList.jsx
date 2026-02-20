@@ -27,7 +27,7 @@ function STOList({ stos, isLoading, onViewDetail, onDelete }) {
                     <div key={sto.id} className="glass card sto-card" style={{ position: 'relative' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)', fontWeight: 700 }}>
-                                <Hash size={16} /> PO: {sto.po_number}
+                                <Hash size={16} /> PO: {sto.sto_number}
                             </div>
                             <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                                 <Calendar size={14} /> {new Date(sto.created_at).toLocaleDateString()}
