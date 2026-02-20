@@ -221,14 +221,25 @@ function STOForm({ onCreated, onCancel }) {
                                             </select>
                                         </td>
                                         <td style={{ padding: '0.5rem' }}>
-                                            <select
-                                                value={item.material_class.toUpperCase()}
-                                                onChange={e => updateItem(index, 'material_class', e.target.value)}
-                                                style={{ width: '80px', background: 'gray', color: 'white', border: '1px solid var(--border-glass)', borderRadius: '4px' }}
-                                            >
-                                                <option value="K9">K9</option>
-                                                <option value="K7">K7</option>
-                                            </select>
+                                            <div style={{ display: 'flex', gap: '0.2rem' }}>
+                                                <select
+                                                    value={['K9', 'K7'].includes(item.material_class.toUpperCase()) ? item.material_class.toUpperCase() : ''}
+                                                    onChange={e => updateItem(index, 'material_class', e.target.value)}
+                                                    style={{ width: '80px', background: 'gray', color: 'white', border: '1px solid var(--border-glass)', borderRadius: '4px' }}
+                                                >
+                                                    <option value="">Custom</option>
+                                                    <option value="K9">K9</option>
+                                                    <option value="K7">K7</option>
+                                                </select>
+                                                {(!['K9', 'K7'].includes(item.material_class.toUpperCase())) && (
+                                                    <input
+                                                        value={item.material_class}
+                                                        onChange={e => updateItem(index, 'material_class', e.target.value)}
+                                                        placeholder="Class"
+                                                        style={{ width: '80px' }}
+                                                    />
+                                                )}
+                                            </div>
                                         </td>
                                         <td style={{ padding: '0.5rem' }}>
                                             <select
