@@ -120,21 +120,23 @@ function STOSearch({ onViewDetail }) {
                     </div>
                     <div className="form-group">
                         <label>From</label>
-                        <input
+                        <select
                             value={filters.fromLocation}
                             onChange={e => setFilters({ ...filters, fromLocation: e.target.value })}
-                            placeholder="Location"
                             style={{ width: '100%' }}
-                        />
+                        >
+                            {locationOptions.map(opt => <option key={opt} value={opt}>{opt || 'All'}</option>)}
+                        </select>
                     </div>
                     <div className="form-group">
                         <label>To</label>
-                        <input
+                        <select
                             value={filters.toLocation}
                             onChange={e => setFilters({ ...filters, toLocation: e.target.value })}
-                            placeholder="Location"
                             style={{ width: '100%' }}
-                        />
+                        >
+                            {locationOptions.map(opt => <option key={opt} value={opt}>{opt || 'All'}</option>)}
+                        </select>
                     </div>
                     <button type="submit" className="btn-primary" style={{ height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
                         <Search size={18} /> {isSearching ? '...' : 'Search'}

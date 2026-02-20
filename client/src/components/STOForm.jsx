@@ -211,12 +211,12 @@ function STOForm({ onCreated, onCancel }) {
                                 required
                                 value={header.from_location}
                                 onChange={e => setHeader({ ...header, from_location: e.target.value })}
-                                style={{ width: '100%', background: 'gray', color: 'white', border: '1px solid var(--border-glass)', borderRadius: '8px', padding: '0.4rem' }}
+                                style={{ width: '100%' }}
                             >
                                 <option value="U3">U3</option>
-                                <option value="KHATPUKUR">KHATPUKUR</option>
-                                <option value="MACKEIL">MACKEIL</option>
-                                <option value="MANGALPUR">MANGALPUR</option>
+                                <option value="Khatpukur">Khatpukur</option>
+                                <option value="Mackeil">Mackeil</option>
+                                <option value="Mangalpur">Mangalpur</option>
                             </select>
                         </div>
                         <div className="form-group">
@@ -225,13 +225,13 @@ function STOForm({ onCreated, onCancel }) {
                                 required
                                 value={header.to_location}
                                 onChange={e => setHeader({ ...header, to_location: e.target.value })}
-                                style={{ width: '100%', background: 'gray', color: 'white', border: '1px solid var(--border-glass)', borderRadius: '8px', padding: '0.4rem' }}
+                                style={{ width: '100%' }}
                             >
                                 <option value="">Select Destination</option>
                                 <option value="U3">U3</option>
-                                <option value="KHATPUKUR">KHATPUKUR</option>
-                                <option value="MACKEIL">MACKEIL</option>
-                                <option value="MANGALPUR">MANGALPUR</option>
+                                <option value="Khatpukur">Khatpukur</option>
+                                <option value="Mackeil">Mackeil</option>
+                                <option value="Mangalpur">Mangalpur</option>
                             </select>
                         </div>
                     </div>

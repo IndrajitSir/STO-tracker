@@ -5,6 +5,8 @@ function STOList({ stos, isLoading, onViewDetail, onDelete }) {
     const [fromFilter, setFromFilter] = React.useState('');
     const [toFilter, setToFilter] = React.useState('');
 
+    const LOCATION_OPTIONS = ['', 'U3', 'Khatpukur', 'Mackeil', 'Mangalpur'];
+
     if (isLoading) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}>
@@ -35,20 +37,24 @@ function STOList({ stos, isLoading, onViewDetail, onDelete }) {
                 <Search size={20} className="text-muted" />
                 <div style={{ flex: 1, display: 'flex', gap: '1rem' }}>
                     <div style={{ flex: 1 }}>
-                        <input
-                            placeholder="Filter From Location..."
+                        <select
                             value={fromFilter}
                             onChange={e => setFromFilter(e.target.value)}
-                            style={{ width: '100%', padding: '0.5rem 0.8rem', fontSize: '0.9rem' }}
-                        />
+                            style={{ width: '100%', padding: '0.4rem 0.8rem', fontSize: '0.9rem' }}
+                        >
+                            <option value="">All From Locations</option>
+                            {LOCATION_OPTIONS.filter(o => o).map(o => <option key={o} value={o}>{o}</option>)}
+                        </select>
                     </div>
                     <div style={{ flex: 1 }}>
-                        <input
-                            placeholder="Filter To Location..."
+                        <select
                             value={toFilter}
                             onChange={e => setToFilter(e.target.value)}
-                            style={{ width: '100%', padding: '0.5rem 0.8rem', fontSize: '0.9rem' }}
-                        />
+                            style={{ width: '100%', padding: '0.4rem 0.8rem', fontSize: '0.9rem' }}
+                        >
+                            <option value="">All To Locations</option>
+                            {LOCATION_OPTIONS.filter(o => o).map(o => <option key={o} value={o}>{o}</option>)}
+                        </select>
                     </div>
                 </div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', minWidth: '80px', textAlign: 'right' }}>
