@@ -31,6 +31,7 @@ function STODetail({ id, onClose, onDelete, onSyncRequest }) {
     if (!data || !data.header) return null;
 
     const { header, items } = data;
+    const isSynced = items.some(i => i.sync_status && i.sync_status !== 'MANUAL');
 
     return (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
