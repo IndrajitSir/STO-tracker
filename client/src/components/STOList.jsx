@@ -1,5 +1,5 @@
 import React from 'react';
-import { Eye, Trash2, Calendar, MapPin, Hash } from 'lucide-react';
+import { Eye, Trash2, Calendar, MapPin, Hash, Search } from 'lucide-react';
 
 function STOList({ stos, isLoading, onViewDetail, onDelete }) {
     const [fromFilter, setFromFilter] = React.useState('');
