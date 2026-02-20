@@ -24,6 +24,7 @@ function STOSearch({ onViewDetail }) {
     ];
     const yearOptions = ['', '2025', '2026'];
     const monthOptions = ['', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+    const locationOptions = ['', 'U3', 'Khatpukur', 'Mackeil', 'Mangalpur'];
 
     const handleSearch = async (e) => {
         e.preventDefault();
