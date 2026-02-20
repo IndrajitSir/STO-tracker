@@ -21,7 +21,13 @@ function STODetail({ id, onClose, onDelete }) {
         fetchDetail();
     }, [id]);
 
-    if (isLoading) return null;
+    if (isLoading) return (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+            <div className="glass card" style={{ padding: '2rem' }}>
+                <h3 className="fade-in">Loading STO Details...</h3>
+            </div>
+        </div>
+    );
     if (!data || !data.header) return null;
 
     const { header, items } = data;

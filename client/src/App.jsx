@@ -50,58 +50,60 @@ function App() {
     };
 
     return (
-        <div className="container fade-in">
-            <header className="glass card flex items-center justify-between" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <Warehouse size={32} className="text-primary" style={{ color: 'var(--primary)' }} />
-                    <h1>STO Tracker</h1>
-                </div>
-                <nav style={{ display: 'flex', gap: '1rem' }}>
-                    <button
-                        onClick={() => setView('list')}
-                        className={`btn-nav ${view === 'list' ? 'active' : ''}`}
-                        style={navBtnStyle(view === 'list')}
-                    >
-                        <ListIcon size={18} /> List
-                    </button>
-                    <button
-                        onClick={() => setView('create')}
-                        className={`btn-nav ${view === 'create' ? 'active' : ''}`}
-                        style={navBtnStyle(view === 'create')}
-                    >
-                        <Plus size={18} /> Create
-                    </button>
-                    <button
-                        onClick={() => setView('search')}
-                        className={`btn-nav ${view === 'search' ? 'active' : ''}`}
-                        style={navBtnStyle(view === 'search')}
-                    >
-                        <Search size={18} /> Search
-                    </button>
-                </nav>
-            </header>
-            {error && (
-                <div className="glass card" style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--danger)', color: 'var(--danger)', padding: '1rem', marginBottom: '1.5rem', borderRadius: '12px' }}>
-                    <strong>Error:</strong> {error}
-                </div>
-            )}
+        <>
+            <div className="container fade-in">
+                <header className="glass card flex items-center justify-between" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <Warehouse size={32} className="text-primary" style={{ color: 'var(--primary)' }} />
+                        <h1>STO Tracker</h1>
+                    </div>
+                    <nav style={{ display: 'flex', gap: '1rem' }}>
+                        <button
+                            onClick={() => setView('list')}
+                            className={`btn-nav ${view === 'list' ? 'active' : ''}`}
+                            style={navBtnStyle(view === 'list')}
+                        >
+                            <ListIcon size={18} /> List
+                        </button>
+                        <button
+                            onClick={() => setView('create')}
+                            className={`btn-nav ${view === 'create' ? 'active' : ''}`}
+                            style={navBtnStyle(view === 'create')}
+                        >
+                            <Plus size={18} /> Create
+                        </button>
+                        <button
+                            onClick={() => setView('search')}
+                            className={`btn-nav ${view === 'search' ? 'active' : ''}`}
+                            style={navBtnStyle(view === 'search')}
+                        >
+                            <Search size={18} /> Search
+                        </button>
+                    </nav>
+                </header>
+                {error && (
+                    <div className="glass card" style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--danger)', color: 'var(--danger)', padding: '1rem', marginBottom: '1.5rem', borderRadius: '12px' }}>
+                        <strong>Error:</strong> {error}
+                    </div>
+                )}
 
-            <main>
-                {view === 'list' && (
-                    <STOList
-                        stos={stos}
-                        isLoading={isLoading}
-                        onViewDetail={handleViewDetail}
-                        onDelete={handleDelete}
-                    />
-                )}
-                {view === 'create' && (
-                    <STOForm onCreated={handleStoCreated} onCancel={() => setView('list')} />
-                )}
-                {view === 'search' && (
-                    <STOSearch onViewDetail={handleViewDetail} />
-                )}
-            </main>
+                <main>
+                    {view === 'list' && (
+                        <STOList
+                            stos={stos}
+                            isLoading={isLoading}
+                            onViewDetail={handleViewDetail}
+                            onDelete={handleDelete}
+                        />
+                    )}
+                    {view === 'create' && (
+                        <STOForm onCreated={handleStoCreated} onCancel={() => setView('list')} />
+                    )}
+                    {view === 'search' && (
+                        <STOSearch onViewDetail={handleViewDetail} />
+                    )}
+                </main>
+            </div>
 
             {selectedStoId && (
                 <STODetail
@@ -113,7 +115,7 @@ function App() {
                     }}
                 />
             )}
-        </div>
+        </>
     );
 }
 
