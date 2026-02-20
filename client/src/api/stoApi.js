@@ -1,7 +1,15 @@
 const API_BASE = '/api/stos';
 
 const handleResponse = async (response) => {
-    const data = await response.json();
+    let data = {};
+    const text = await response.text();
+
+    try {
+        if (text) data = JSON.parse(text);
+    } catch (err) {
+        console.error('Failed to parse JSON response:', text);
+    }
+
     if (!response.ok || data.error) {
         throw new Error(data.error || `HTTP error! status: ${response.status}`);
     }

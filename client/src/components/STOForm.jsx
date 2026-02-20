@@ -97,7 +97,10 @@ function STOForm({ onCreated, onCancel }) {
                     ...header,
                     po_number: ''
                 },
-                items
+                items: items.map(item => ({
+                    ...item,
+                    length: typeof item.length === 'string' ? parseFloat(item.length.replace('M', '')) : item.length
+                }))
             };
             await stoApi.create(submissionData);
             onCreated();
@@ -245,7 +248,7 @@ function STOForm({ onCreated, onCancel }) {
                                             <select
                                                 value={item.length}
                                                 onChange={e => updateItem(index, 'length', e.target.value)}
-                                                style={{ width: '80px', background: 'gray', color: 'white', border: '1px solid var(--border-glass)', borderRadius: '4px' }}
+                                                style={{ width: '100px', background: 'gray', color: 'white', border: '1px solid var(--border-glass)', borderRadius: '4px' }}
                                             >
                                                 {lengthOptions.map(opt => (
                                                     <option key={opt} value={opt}>{opt}</option>
