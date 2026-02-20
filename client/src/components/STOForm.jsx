@@ -31,34 +31,93 @@ function STOForm({ onCreated, onCancel }) {
     const handleBulkParse = () => {
         if (!bulkData.trim()) return;
 
-        // Extract STO Number
-        const stoMatch = bulkData.match(/STO\s*:\s*(\d+)/i);
+        // Helper to normalize STO numbers to 10 digits starting with 62
+        const normalizeSto = (num) => {
+            if (!num) return '';
+            let s = num.toString().trim();
+            if (s.length >= 10) return s;
+            const needed = 10 - s.length - 2; // -2 for the '62' prefix
+            if (needed < 0) return '62' + s; // Just prefix if already long but < 10
+            return '62' + '0'.repeat(needed) + s;
+        };
+
+        // Extract STO/PO Number from various formats
+        const headerRegex = /(?:STO|PO)\s*(?::|->)?\s*(\d+)/i;
+        const stoMatch = bulkData.match(headerRegex);
         if (stoMatch) {
-            setHeader(prev => ({ ...prev, sto_number: stoMatch[1] }));
+            setHeader(prev => ({ ...prev, sto_number: normalizeSto(stoMatch[1]) }));
         }
 
-        // Extract Items
-        // Example: 350 K7 L6.0 → 1992 MTR- 6.0M202602
-        const itemRegex = /(\d+)\s+(K\d+).*?→\s*([\d.]+)\s*MTR-\s*([\d.]+M)(\d+)/gi;
+        const lines = bulkData.split('\n');
         const newItems = [];
-        let match;
 
-        while ((match = itemRegex.exec(bulkData)) !== null) {
-            newItems.push({
-                diameter: parseInt(match[1]),
-                material_class: match[2],
-                quantity_mtr: parseFloat(match[3]),
-                length: match[4],
-                batch: match[5]
+        lines.forEach(line => {
+            const cleanLine = line.trim();
+            if (!cleanLine) return;
+
+            // 1. Extract shared context: Diameter and Class at start of line
+            // Example: "250 k7" or "350 K7 L6.0"
+            const contextMatch = cleanLine.match(/^(\d+)\s+([A-Z0-9]+)/i);
+            if (!contextMatch) return;
+
+            const diameter = parseInt(contextMatch[1]);
+            const matClass = contextMatch[2].toUpperCase();
+
+            // 2. Extract Batch from line (usually at end)
+            let sharedBatch = '';
+            const specialBatchMatch = cleanLine.match(/(\d{1,2})\s*B(?:ATCH)?/i);
+            const standardBatchMatch = cleanLine.match(/(\d{6})(?:\D|$)/);
+
+            if (specialBatchMatch) {
+                const month = specialBatchMatch[1].padStart(2, '0');
+                const year = parseInt(month) <= 5 ? '2026' : '2025';
+                sharedBatch = year + month;
+            } else if (standardBatchMatch) {
+                sharedBatch = standardBatchMatch[1];
+            }
+
+            // 3. Find all (Length, Qty) pairs in the line
+            // Supports: "5MM(155 MTR)", "5.5MM(93.5 MTR)", "L6.0 → 528 MTR"
+            const pairs = [];
+
+            // Pattern A: Comma/AND separated format: "5.5MM(93.5 MTR)"
+            const segmentRegex = /([\d.]+)\s*MM?\s*\(?([\d.]+)\s*MTR/gi;
+            let segMatch;
+            while ((segMatch = segmentRegex.exec(cleanLine)) !== null) {
+                pairs.push({ length: segMatch[1], qty: parseFloat(segMatch[2]) });
+            }
+
+            // Pattern B: Arrow format: "L6.0 → 528 MTR" (if Pattern A found nothing)
+            if (pairs.length === 0) {
+                const arrowRegex = /L([\d.]+).*?→\s*(?:\d+\s*pcs\s*)?\(?([\d.]+)\s*MTR/i;
+                const arrowMatch = cleanLine.match(arrowRegex);
+                if (arrowMatch) {
+                    pairs.push({ length: arrowMatch[1], qty: parseFloat(arrowMatch[2]) });
+                }
+            }
+
+            // 4. Create items from pairs
+            pairs.forEach(p => {
+                let len = p.length;
+                if (!len.includes('.')) len += '.0';
+                len += 'M';
+
+                newItems.push({
+                    diameter,
+                    material_class: matClass,
+                    quantity_mtr: p.qty,
+                    length: len,
+                    batch: sharedBatch
+                });
             });
-        }
+        });
 
         if (newItems.length > 0) {
             setItems(newItems);
             setBulkData('');
             alert(`Successfully parsed ${newItems.length} items.`);
         } else {
-            alert('Could not find any items in the provided data. Please check the format.');
+            alert('Could not parse data. Please check the format.');
         }
     };
 
