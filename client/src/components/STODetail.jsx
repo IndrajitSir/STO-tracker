@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { stoApi } from '../api/stoApi';
-import { X, Hash, MapPin, Warehouse, Trash2, Tag, Layers, Ruler } from 'lucide-react';
+import { X, Hash, MapPin, Warehouse, Trash2, Tag, Layers, Ruler, ShieldCheck, History, Info } from 'lucide-react';
 
-function STODetail({ id, onClose, onDelete }) {
+function STODetail({ id, onClose, onDelete, onSyncRequest }) {
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -39,12 +39,35 @@ function STODetail({ id, onClose, onDelete }) {
                     <X size={24} />
                 </button>
 
-                <div style={{ marginBottom: '2rem' }}>
-                    <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)' }}>
-                        STO Details: PO {header.sto_number}
-                    </h2>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Created on {new Date(header.created_at).toLocaleString()}</p>
+                <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div>
+                        <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)' }}>
+                            STO Details: PO {header.sto_number}
+                            {isSynced && <ShieldCheck size={20} className="text-accent" />}
+                        </h2>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Created on {new Date(header.created_at).toLocaleString()}</p>
+                    </div>
+                    <button
+                        onClick={() => onSyncRequest(header.sto_number)}
+                        className="btn-primary"
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--accent)', borderColor: 'var(--accent)' }}
+                    >
+                        <ShieldCheck size={18} /> Update From SAP STO
+                    </button>
                 </div>
+
+                {isSynced && (
+                    <div style={{ marginBottom: '1.5rem', padding: '0.75rem 1rem', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--accent)', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.9rem' }}>
+                        <Info size={18} className="text-accent" />
+                        <div>
+                            This STO is <strong>synchronized with SAP</strong>.
+                            Manual quantity updates are disabled.
+                        </div>
+                        <div style={{ marginLeft: 'auto', fontSize: '0.8rem', opacity: 0.8, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                            <History size={14} /> Last Sync: {new Date(items[0].last_synced_at).toLocaleString()}
+                        </div>
+                    </div>
+                )}
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
                     <div>
@@ -87,55 +110,87 @@ function STODetail({ id, onClose, onDelete }) {
                             <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border-glass)', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
                                 <th style={{ padding: '0.75rem' }}>Material Specification</th>
                                 <th style={{ padding: '0.75rem' }}>Batch</th>
+                                <th style={{ padding: '0.75rem' }}>Status</th>
                                 <th style={{ padding: '0.75rem', textAlign: 'right' }}>Quantity</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {items.map((item, i) => (
-                                <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                    <td style={{ padding: '1rem 0.75rem' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                                <Layers size={14} className="text-muted" /> {item.diameter}mm  {item.material_class}
+                            {items.map((item, i) => {
+                                const isSyncLocked = item.sync_status && item.sync_status !== 'MANUAL';
+                                return (
+                                    <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', background: item.sync_status === 'CREATED_FROM_SAP' ? 'rgba(16,185,129,0.05)' : 'transparent' }}>
+                                        <td style={{ padding: '1rem 0.75rem' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                                    <Layers size={14} className="text-muted" /> {item.diameter}mm  {item.material_class}
+                                                </div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                                    <Ruler size={14} className="text-muted" /> {item.length}m
+                                                </div>
                                             </div>
+                                        </td>
+                                        <td style={{ padding: '1rem 0.75rem' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                                <Ruler size={14} className="text-muted" /> {item.length}m
+                                                <Tag size={14} className="text-muted" /> {item.batch || '—'}
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td style={{ padding: '1rem 0.75rem' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                            <Tag size={14} className="text-muted" /> {item.batch || '—'}
-                                        </div>
-                                    </td>
-                                    <td style={{ padding: '1rem 0.75rem', textAlign: 'right', fontWeight: 700 }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.5rem' }}>
-                                            <input
-                                                type="number"
-                                                step="0.1"
-                                                defaultValue={item.quantity_mtr}
-                                                id={`qty-${item.id}`}
-                                                style={{ width: '80px', textAlign: 'right', background: 'rgba(0,0,0,0.2)', color: 'var(--accent)', border: '1px solid var(--border-glass)', borderRadius: '4px', padding: '0.2rem' }}
-                                            />
-                                            <button
-                                                onClick={async () => {
-                                                    const newQty = parseFloat(document.getElementById(`qty-${item.id}`).value);
-                                                    if (isNaN(newQty)) return;
-                                                    try {
-                                                        await stoApi.updateItemQuantity(id, item.id, newQty);
-                                                        alert('Quantity updated successfully');
-                                                    } catch (err) {
-                                                        alert('Failed to update quantity: ' + err.message);
-                                                    }
-                                                }}
-                                                style={{ background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '4px', padding: '0.2rem 0.5rem', fontSize: '0.75rem', cursor: 'pointer' }}
-                                            >
-                                                Update
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                                        </td>
+                                        <td style={{ padding: '1rem 0.75rem' }}>
+                                            <div style={{
+                                                fontSize: '0.75rem',
+                                                padding: '0.2rem 0.5rem',
+                                                borderRadius: '4px',
+                                                display: 'inline-block',
+                                                background: item.sync_status === 'NOT_IN_SAP' ? 'rgba(239, 68, 68, 0.2)' :
+                                                    item.sync_status === 'SYNCED' ? 'rgba(16, 185, 129, 0.2)' :
+                                                        item.sync_status === 'CREATED_FROM_SAP' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255,255,255,0.1)',
+                                                color: item.sync_status === 'NOT_IN_SAP' ? 'var(--danger)' :
+                                                    item.sync_status === 'SYNCED' ? 'var(--accent)' :
+                                                        item.sync_status === 'CREATED_FROM_SAP' ? 'var(--primary)' : 'var(--text-muted)'
+                                            }}>
+                                                {item.sync_status || 'MANUAL'}
+                                            </div>
+                                        </td>
+                                        <td style={{ padding: '1rem 0.75rem', textAlign: 'right', fontWeight: 700 }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                                                <input
+                                                    type="number"
+                                                    step="0.1"
+                                                    disabled={isSyncLocked}
+                                                    defaultValue={item.quantity_mtr}
+                                                    id={`qty-${item.id}`}
+                                                    style={{
+                                                        width: '80px',
+                                                        textAlign: 'right',
+                                                        background: 'rgba(0,0,0,0.2)',
+                                                        color: isSyncLocked ? 'var(--text-muted)' : 'var(--accent)',
+                                                        border: '1px solid var(--border-glass)',
+                                                        borderRadius: '4px',
+                                                        padding: '0.2rem',
+                                                        opacity: isSyncLocked ? 0.6 : 1
+                                                    }}
+                                                />
+                                                {!isSyncLocked && (
+                                                    <button
+                                                        onClick={async () => {
+                                                            const newQty = parseFloat(document.getElementById(`qty-${item.id}`).value);
+                                                            if (isNaN(newQty)) return;
+                                                            try {
+                                                                await stoApi.updateItemQuantity(id, item.id, newQty);
+                                                                alert('Quantity updated successfully');
+                                                            } catch (err) {
+                                                                alert('Failed to update quantity: ' + err.message);
+                                                            }
+                                                        }}
+                                                        style={{ background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '4px', padding: '0.2rem 0.5rem', fontSize: '0.75rem', cursor: 'pointer' }}
+                                                    >
+                                                        Update
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>

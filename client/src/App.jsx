@@ -4,6 +4,7 @@ import STOForm from './components/STOForm';
 import STOList from './components/STOList';
 import STOSearch from './components/STOSearch';
 import STODetail from './components/STODetail';
+import SAPSyncModal from './components/SAPSyncModal';
 import { Layout, Plus, Search, List as ListIcon, Warehouse } from 'lucide-react';
 
 function App() {
@@ -12,6 +13,9 @@ function App() {
     const [stos, setStos] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    // SAP Sync State
+    const [sapSyncData, setSapSyncData] = useState({ isOpen: false, stoNumber: '' });
 
     useEffect(() => {
         if (view === 'list') {
@@ -47,6 +51,17 @@ function App() {
             await stoApi.delete(id);
             loadStos();
         }
+    };
+
+    const openSapSync = (stoNumber) => {
+        setSapSyncData({ isOpen: true, stoNumber });
+    };
+
+    const handleSyncComplete = (summary) => {
+        alert(`SAP Sync Complete:\n${summary.updated} updated\n${summary.inserted} inserted\n${summary.zeroed} set to zero`);
+        loadStos();
+        // If we are on detail view, it will need a way to refresh too.
+        // We'll handle that via a key change or state update if needed.
     };
 
     return (

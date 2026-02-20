@@ -61,5 +61,14 @@ export const stoApi = {
             body: JSON.stringify({ quantity_mtr: quantity }),
         });
         return handleResponse(response);
+    },
+
+    updateFromSap: async (stoNumber, sapUser, sapPassword) => {
+        const response = await fetch(`${API_BASE}/update-from-sap`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ stoNumber, sapUser, sapPassword }),
+        });
+        return handleResponse(response);
     }
 };

@@ -1,7 +1,7 @@
 import React from 'react';
-import { Eye, Trash2, Calendar, MapPin, Hash, Search } from 'lucide-react';
+import { Eye, Trash2, Calendar, MapPin, Hash, Search, ShieldCheck } from 'lucide-react';
 
-function STOList({ stos, isLoading, onViewDetail, onDelete }) {
+function STOList({ stos, isLoading, onViewDetail, onDelete, onSyncRequest }) {
     const [fromFilter, setFromFilter] = React.useState('');
     const [toFilter, setToFilter] = React.useState('');
 
@@ -96,6 +96,12 @@ function STOList({ stos, isLoading, onViewDetail, onDelete }) {
                                 style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: 'rgba(99, 102, 241, 0.1)', border: '1px solid var(--primary)', color: 'var(--primary)', padding: '0.5rem', borderRadius: '8px' }}
                             >
                                 <Eye size={16} /> Details
+                            </button>
+                            <button
+                                onClick={() => onSyncRequest(sto.sto_number)}
+                                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--accent)', color: 'var(--accent)', padding: '0.5rem', borderRadius: '8px' }}
+                            >
+                                <ShieldCheck size={16} /> Update From SAP
                             </button>
                         </div>
                     </div>
