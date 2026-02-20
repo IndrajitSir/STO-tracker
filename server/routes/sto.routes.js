@@ -12,10 +12,9 @@ router.post('/', async (req, res) => {
 
     const [h] = await conn.execute(
       `INSERT INTO sto_header
-      (po_number, sto_number, from_location, to_location, remarks, created_by)
-      VALUES (?,?,?,?,?,?)`,
+      (sto_number, from_location, to_location, remarks, created_by)
+      VALUES (?,?,?,?,?)`,
       [
-        header.po_number,
         header.sto_number,
         header.from_location,
         header.to_location,
@@ -62,10 +61,10 @@ router.get('/material-search', async (req, res) => {
     const { diameter, materialClass, length, batch } = req.query;
 
     let sql = `
-    SELECT sh.po_number, sh.from_location, sh.to_location,
+    SELECT sh.sto_number, sh.from_location, sh.to_location,
            si.diameter, si.material_class, si.length, si.batch, si.quantity_mtr
     FROM sto_items si
-    JOIN sto_header sh ON sh.id = si.id
+    JOIN sto_header sh ON sh.id = si.sto_id
     WHERE 1=1
     `;
 

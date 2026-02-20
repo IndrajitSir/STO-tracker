@@ -27,7 +27,7 @@ function STODetail({ id, onClose, onDelete }) {
     const { header, items } = data;
 
     return (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
             <div className="glass card fade-in" style={{ width: '100%', maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }}>
                 <button onClick={onClose} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'transparent', border: 'none', color: 'white' }}>
                     <X size={24} />
@@ -35,7 +35,7 @@ function STODetail({ id, onClose, onDelete }) {
 
                 <div style={{ marginBottom: '2rem' }}>
                     <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)' }}>
-                        STO Details: PO {header.po_number}
+                        STO Details: PO {header.sto_number}
                     </h2>
                     <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Created on {new Date(header.created_at).toLocaleString()}</p>
                 </div>
@@ -90,7 +90,7 @@ function STODetail({ id, onClose, onDelete }) {
                                     <td style={{ padding: '1rem 0.75rem' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                                <Layers size={14} className="text-muted" /> {item.diameter}mm C-{item.material_class}
+                                                <Layers size={14} className="text-muted" /> {item.diameter}mm  {item.material_class}
                                             </div>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                                                 <Ruler size={14} className="text-muted" /> {item.length}m

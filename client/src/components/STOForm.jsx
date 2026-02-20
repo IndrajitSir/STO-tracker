@@ -93,10 +93,7 @@ function STOForm({ onCreated, onCancel }) {
         setIsSubmitting(true);
         try {
             const submissionData = {
-                header: {
-                    ...header,
-                    po_number: ''
-                },
+                header,
                 items: items.map(item => ({
                     ...item,
                     length: typeof item.length === 'string' ? parseFloat(item.length.replace('M', '')) : item.length
