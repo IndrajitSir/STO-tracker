@@ -61,7 +61,7 @@ router.get('/material-search', async (req, res) => {
     const { diameter, materialClass, length, batch } = req.query;
 
     let sql = `
-    SELECT sh.sto_number, sh.from_location, sh.to_location,
+    SELECT sh.id as sto_id, sh.sto_number, sh.from_location, sh.to_location,
            si.diameter, si.material_class, si.length, si.batch, si.quantity_mtr
     FROM sto_items si
     JOIN sto_header sh ON sh.id = si.sto_id

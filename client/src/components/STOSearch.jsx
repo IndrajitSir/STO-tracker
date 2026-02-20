@@ -63,15 +63,26 @@ function STOSearch({ onViewDetail }) {
                     </div>
                     <div className="form-group">
                         <label>Class</label>
-                        <select
-                            value={filters.materialClass}
-                            onChange={e => setFilters({ ...filters, materialClass: e.target.value })}
-                            style={{ width: '100%' }}
-                        >
-                            <option value="">All</option>
-                            <option value="K9">K9</option>
-                            <option value="K7">K7</option>
-                        </select>
+                        <div style={{ display: 'flex', gap: '0.2rem' }}>
+                            <select
+                                value={['K9', 'K7'].includes(filters.materialClass.toUpperCase()) || filters.materialClass === '' ? filters.materialClass.toUpperCase() : 'CUSTOM'}
+                                onChange={e => setFilters({ ...filters, materialClass: e.target.value === 'CUSTOM' ? ' ' : e.target.value })}
+                                style={{ width: '100%' }}
+                            >
+                                <option value="">All</option>
+                                <option value="K9">K9</option>
+                                <option value="K7">K7</option>
+                                <option value="CUSTOM">Custom</option>
+                            </select>
+                            {(!['K9', 'K7', ''].includes(filters.materialClass.toUpperCase())) && (
+                                <input
+                                    value={filters.materialClass.trim()}
+                                    onChange={e => setFilters({ ...filters, materialClass: e.target.value })}
+                                    placeholder="Class"
+                                    style={{ width: '100px' }}
+                                />
+                            )}
+                        </div>
                     </div>
                     <div className="form-group">
                         <label>Length</label>
