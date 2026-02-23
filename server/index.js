@@ -4,11 +4,16 @@ const bodyParser = require('body-parser');
 const stoRoutes = require('./routes/sto.routes');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: ['https://sto-tracker.vercel.app', 'http://localhost:5173'],
+  methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+  credentials: true
+}));
 app.use(bodyParser.json());
 
 app.use('/api/stos', stoRoutes);
 
-app.listen(5000, () => {
-  console.log('Server running on port 5000');
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

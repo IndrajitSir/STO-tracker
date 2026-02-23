@@ -1,4 +1,4 @@
-const API_BASE = '/api/stos';
+const API_BASE = import.meta.env.VITE_API_URL || '/api/stos';
 
 const handleResponse = async (response) => {
     let data = {};
